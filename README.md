@@ -39,26 +39,23 @@ You need `Node.js` and `npm` installed. If you don't have them, you can download
    ```bash
    npm install
 
-### For the backend (if applicable), install the dependencies:
-
-```bash
-cd backend
-npm install
+4. For the backend (if applicable), install the dependencies:
+   ```bash
+   cd backend
+   
+   npm install
 
 ### Running the Application
 
 1. Start the frontend:
+   ```bash
+   npm start
 
-```bash
-npm start
+2. Start the Backend (if applicable)
+   ```bash
+   node server.js
 
-### Start the Backend (if applicable)
-
-```bash
-node server.js
-
-
-The application should now be running on [http://localhost:3000](http://localhost:3000).
+The application should now be running on [http://localhost:3000]().
 
 ### Usage
 
