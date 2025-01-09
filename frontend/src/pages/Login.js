@@ -3,6 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import authService from '../services/auth';
 import styled from 'styled-components';
 
+const PageWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* Full viewport height */
+  background-color: #f8f9fa;
+`;
+
 const Container = styled.div`
   max-width: 500px;
   margin: 0 auto;
@@ -12,6 +20,7 @@ const Container = styled.div`
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   font-family: 'Arial', sans-serif;
   background-color: #f8f9fa;
+  width: 100%; /* Ensure it takes full width on smaller devices */
 
   @media (max-width: 768px) {
     max-width: 90%;
@@ -27,6 +36,7 @@ const Heading = styled.h2`
 
   @media (max-width: 768px) {
     font-size: 24px;
+    margin-bottom: 15px;
   }
 `;
 
@@ -41,6 +51,7 @@ const Form = styled.form`
     border: 1px solid #ccc;
     border-radius: 4px;
     width: 100%;
+    box-sizing: border-box;
   }
 
   input:focus {
@@ -129,6 +140,7 @@ const Login = ({ setIsAuthenticated }) => {
   };
 
   return (
+    <PageWrapper>
     <Container>
       <Heading>Login</Heading>
       <Form onSubmit={handleLogin}>
@@ -153,6 +165,7 @@ const Login = ({ setIsAuthenticated }) => {
         Don't have an account? <a href="/register">Register</a>
       </RegisterLink>
     </Container>
+    </PageWrapper>
   );
 };
 

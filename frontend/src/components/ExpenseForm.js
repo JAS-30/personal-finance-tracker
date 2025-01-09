@@ -8,7 +8,7 @@ const FormContainer = styled.div`
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   max-width: 500px;
-  margin: 20px auto;
+  margin: 20px 10px;
 
   @media (max-width: 768px) {
     padding: 15px;
@@ -22,62 +22,75 @@ const FormContainer = styled.div`
 `;
 
 const Input = styled.input`
-  width: 100%;
-  padding: 12px;
-  margin: 10px 0;
+  width: 90%; /* Slightly reduced width */
+  padding: 10px;
+  margin: 8px 5px;
   border-radius: 4px;
   border: 1px solid #ddd;
   font-size: 16px;
-
+  display: block; /* To center the elements */
+  
   @media (max-width: 768px) {
-    padding: 10px;
+    padding: 8px;
+    margin: 6px auto;
+    font-size: 14px;
   }
 
   @media (max-width: 480px) {
-    font-size: 14px;
+    padding: 6px;
+    margin: 4px auto;
+    font-size: 12px;
   }
 `;
 
 const Select = styled.select`
-  width: 100%;
-  padding: 12px;
-  margin: 10px 0;
+  width: 90%; /* Same width as input */
+  padding: 10px;
+  margin: 8px auto;
   border-radius: 4px;
   border: 1px solid #ddd;
   font-size: 16px;
-
+  display: block;
+  
   @media (max-width: 768px) {
-    padding: 10px;
+    padding: 8px;
+    margin: 6px auto;
+    font-size: 14px;
   }
 
   @media (max-width: 480px) {
-    font-size: 14px;
+    padding: 6px;
+    margin: 4px auto;
+    font-size: 12px;
   }
 `;
 
 const Button = styled.button`
   background-color: #4CAF50;
   color: white;
-  padding: 12px;
-  width: 100%;
+  padding: 10px;
+  width: 90%; /* Match width with the inputs */
   border-radius: 4px;
   border: none;
   font-size: 16px;
   cursor: pointer;
+  display: block;
+  margin: 12px auto; /* Center button and add margin between form elements */
 
   &:hover {
     background-color: #45a049;
   }
 
   @media (max-width: 768px) {
-    padding: 10px;
+    padding: 8px;
+    font-size: 14px;
   }
 
   @media (max-width: 480px) {
+    padding: 10px;
     font-size: 14px;
   }
 `;
-
 
 const ExpenseForm = ({ onAddTransaction, totalBudget }) => {
   const [amount, setAmount] = useState('');

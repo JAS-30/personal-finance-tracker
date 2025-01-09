@@ -3,7 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import authService from '../services/auth';
 import styled from 'styled-components';
 
-// Styled components for Register page (same as before)
+const PageWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* Full viewport height */
+  background-color: #f8f9fa;
+`;
+
+
 const Container = styled.div`
   max-width: 500px;
   margin: 0 auto;
@@ -12,7 +20,7 @@ const Container = styled.div`
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   font-family: 'Arial', sans-serif;
-  background-color: #f8f9fa;
+  width: 100%; /* Ensure it takes full width on smaller devices */
 
   @media (max-width: 768px) {
     max-width: 90%;
@@ -145,6 +153,7 @@ const Register = () => {
   };
 
   return (
+    <PageWrapper>
     <Container>
       <Heading>Register</Heading>
       <Form onSubmit={handleRegister}>
@@ -182,6 +191,7 @@ const Register = () => {
         Already have an account? <a href="/login">Login</a>
       </RedirectLink>
     </Container>
+    </PageWrapper>
   );
 };
 

@@ -3,58 +3,63 @@ import styled from 'styled-components';
 import apiService from '../services/api'; // Import the API service
 
 // Styled components
-// Styled components
 const Container = styled.div`
-  padding: 20px;
+  padding: 20px; /* Increased padding */
   background-color: #f4f4f4;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+/* Add a max width to prevent stretching on large screens */
+  margin: 0 auto;
 
   @media (max-width: 768px) {
-    padding: 15px;
+    padding: 10px;
   }
 `;
 
 const TransactionItem = styled.li`
-  padding: 15px;
-  margin-bottom: 10px;
+  padding: 12px 20px; /* Increased padding for better spacing */
+  margin-bottom: 12px;
   background-color: #fff;
-  border-radius: 5px;
+  border-radius: 8px;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
   list-style-type: none;
   position: relative;
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  width: 80%; /* Full width */
 
   @media (max-width: 768px) {
-    padding: 12px;
+    padding: 8px 12px;
   }
 `;
 
 const ColorBanner = styled.div`
-  width: 10px;
+  width: 12px; /* Increased the banner width */
   height: 100%;
   background-color: ${(props) => props.color};
   position: absolute;
   top: 0;
   left: 0;
-  border-top-left-radius: 5px;
-  border-bottom-left-radius: 5px;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
 `;
 
 const Header = styled.h3`
-  font-size: 24px;
+  font-size: 22px; /* Increased font size */
   color: #333;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 
   @media (max-width: 768px) {
-    font-size: 20px;
+    font-size: 18px;
   }
 `;
 
 const Text = styled.p`
-  font-size: 16px;
-  margin: 5px 0;
+  font-size: 16px; /* Increased text size for better readability */
+  margin: 6px 0;
+  text-align: left;
 
   @media (max-width: 768px) {
     font-size: 14px;
@@ -65,17 +70,22 @@ const NoTransactionsMessage = styled.p`
   font-size: 18px;
   color: #666;
   font-style: italic;
+
+  @media (max-width: 768px) {
+    font-size: 16px;
+  }
 `;
 
 const Button = styled.button`
-  padding: 5px 10px;
-  margin-left: 10px;
+  padding: 8px 16px; /* Increased button size */
+  margin-top: 8px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   background-color: #007bff;
   color: #fff;
   font-size: 14px;
+  width: auto;
 
   &:hover {
     background-color: #0056b3;
@@ -83,6 +93,7 @@ const Button = styled.button`
 
   @media (max-width: 768px) {
     font-size: 12px;
+    padding: 6px 12px;
   }
 `;
 
@@ -94,35 +105,33 @@ const DeleteButton = styled(Button)`
   }
 `;
 
-// Responsive changes for mobile
 const MobileFormInputs = styled.input`
-  font-size: 14px;
+  font-size: 16px;
   padding: 8px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   width: 100%;
   border-radius: 5px;
   border: 1px solid #ddd;
 
   @media (max-width: 768px) {
-    font-size: 12px;
+    font-size: 14px;
     padding: 6px;
   }
 `;
 
 const MobileSelect = styled.select`
-  font-size: 14px;
+  font-size: 16px;
   padding: 8px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   width: 100%;
   border-radius: 5px;
   border: 1px solid #ddd;
 
   @media (max-width: 768px) {
-    font-size: 12px;
+    font-size: 14px;
     padding: 6px;
   }
 `;
-
 
 // In TransactionList.js
 const TransactionList = ({ transactions, token, refreshTransactions, subcategoryColors }) => {
@@ -257,7 +266,4 @@ const TransactionList = ({ transactions, token, refreshTransactions, subcategory
   );
 };
 
-
 export default TransactionList;
-
-

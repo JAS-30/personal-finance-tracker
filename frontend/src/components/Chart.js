@@ -1,5 +1,4 @@
-// Chart Component
-import React, { useEffect, useMemo, useState, useCallback} from 'react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
 import styled from 'styled-components';
 
@@ -42,12 +41,12 @@ const Chart = ({ transactions, totalBudget, onColorMappingChange }) => {
       const totalExpenses = Object.values(data).reduce((sum, value) => sum + value, 0);
       setRemainingBudget(totalBudget - totalExpenses);
     }
-  }, [transactions, totalBudget]); // Corrected to include dependencies
+  }, [transactions, totalBudget]);
 
   const data = useMemo(() => {
     if (!expenseData || Object.keys(expenseData).length === 0) return [];
     
-    const chartData = [
+    return [
       ...Object.keys(expenseData).map(subcategory => ({
         name: subcategory,
         value: expenseData[subcategory],
@@ -57,14 +56,12 @@ const Chart = ({ transactions, totalBudget, onColorMappingChange }) => {
         value: remainingBudget < 0 ? 0 : remainingBudget,
       },
     ];
-
-    return chartData;
   }, [expenseData, remainingBudget]);
 
   const subcategoryColors = useMemo(() => {
     const COLORS = [
       '#FF6384', '#36A2EB', '#FFCE56', '#4CAF50', '#FF9800',
-      '#FF5733', '#C70039', '#900C3F', '#581845', '#FFC300' // Exclude gray here
+      '#FF5733', '#C70039', '#900C3F', '#581845', '#FFC300'
     ];
 
     const colors = {};
@@ -75,16 +72,15 @@ const Chart = ({ transactions, totalBudget, onColorMappingChange }) => {
     });
 
     return colors;
-  }, [data]); // Corrected to include data as dependency
+  }, [data]);
 
-  // Use useCallback to prevent re-creating this function on each render
   const memoizedOnColorMappingChange = useCallback(() => {
     onColorMappingChange(subcategoryColors);
   }, [onColorMappingChange, subcategoryColors]);
 
   useEffect(() => {
-    memoizedOnColorMappingChange(); // Safe usage of memoized function
-  }, [memoizedOnColorMappingChange]); // Corrected to use memoized version
+    memoizedOnColorMappingChange();
+  }, [memoizedOnColorMappingChange]);
 
   if (!totalBudget || !transactions || transactions.length === 0) {
     return (
@@ -96,7 +92,11 @@ const Chart = ({ transactions, totalBudget, onColorMappingChange }) => {
 
   return (
     <Container>
-      <PieChart width={300} height={300}>
+      <PieChart
+        width={300}
+        height={300}
+        style={{ maxWidth: '100%', height: 'auto' }} // Make chart responsive
+      >
         <Pie
           data={data}
           dataKey="value"
@@ -117,6 +117,5 @@ const Chart = ({ transactions, totalBudget, onColorMappingChange }) => {
     </Container>
   );
 };
-
 
 export default Chart;

@@ -27,6 +27,7 @@ const Section = styled.section`
   margin-bottom: 30px;
   display: flex;
   flex-direction: column;
+  flex-wrap: wrap;
 
   @media (max-width: 768px) {
     margin-bottom: 20px;
@@ -41,6 +42,7 @@ const Heading = styled.h2`
 
   @media (max-width: 768px) {
     font-size: 20px;
+    text-align: center;
   }
 `;
 
@@ -51,6 +53,19 @@ const Subheading = styled.h3`
 
   @media (max-width: 768px) {
     font-size: 18px;
+    text-align: center;
+  }
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
   }
 `;
 
@@ -65,20 +80,20 @@ const Button = styled.button`
   margin-right: 10px;
   margin-bottom: 10px;
   transition: background-color 0.3s ease;
-  width: 100%;
-  max-width: 250px;
+  flex-grow: 1;
 
   &:hover {
     background-color: #0056b3;
   }
 
   @media (max-width: 768px) {
-    font-size: 14px;
-    padding: 10px 20px;
+    font-size: 12px;
+    padding: 8px 16px;
     margin-right: 0;
-    max-width: 100%;
+    width: 100%;
   }
 `;
+
 
 const ErrorMessage = styled.div`
   color: red;
@@ -99,7 +114,6 @@ const LoadingMessage = styled.div`
     font-size: 16px;
   }
 `;
-
 
 const Home = () => {
   const [user, setUser] = useState(null);
@@ -317,8 +331,10 @@ const Home = () => {
       )}
 
       <div>
+      <ButtonContainer>
         <Button onClick={() => navigate('/profile')}>Go to Profile</Button>
         <Button onClick={() => navigate('/transaction-history')}>View Transaction History</Button>
+      </ButtonContainer>
       </div>
     </Container>
   );

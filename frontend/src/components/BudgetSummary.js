@@ -99,9 +99,16 @@ const Button = styled.button`
 const ChartContainer = styled.div`
   width: 100%;
   height: 300px;
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center;     /* Center vertically */
 
   @media (max-width: 768px) {
-    height: 250px; /* Adjusted height for mobile */
+    height: 250px;  /* Adjusted height for medium screens */
+  }
+
+  @media (max-width: 480px) {
+    height: 200px;  /* Even smaller height for very small screens */
   }
 `;
 
@@ -113,8 +120,7 @@ const BudgetSummary = ({ budget, userId, token, onBudgetUpdate, income, transact
     total: budget.total,
     remaining: budget.remaining,
   });
-  console.log('found :',transactions)
-  // Ensure that expenses are calculated correctly based on transactions
+
   const expenses = transactions.reduce((acc, transaction) => {
     if (transaction.category === 'expense') {
       acc += transaction.amount; // Sum the amount of all expense transactions
@@ -152,7 +158,6 @@ const BudgetSummary = ({ budget, userId, token, onBudgetUpdate, income, transact
     setIsEditing(false);
   };
 
-  // Custom tooltip to show only the category label and value
   const CustomTooltip = ({ payload, label }) => {
     if (payload && payload.length) {
       return (
@@ -238,8 +243,6 @@ const BudgetSummary = ({ budget, userId, token, onBudgetUpdate, income, transact
   );
 };
 
-
-
 BudgetSummary.propTypes = {
   budget: PropTypes.shape({
     total: PropTypes.number.isRequired,
@@ -250,8 +253,5 @@ BudgetSummary.propTypes = {
   onBudgetUpdate: PropTypes.func.isRequired,
   income: PropTypes.number.isRequired,
 };
-
-
-
 
 export default BudgetSummary;
