@@ -10,6 +10,9 @@ const authenticateToken = (req, res, next) => {
     const token = authHeader.split(' ')[1];
 
     try {
+        // Log the token to ensure it's being passed correctly
+        console.log('Token received:', token);
+
         const verified = jwt.verify(token, process.env.JWT_SECRET);
         console.log('Verified Token:', verified); // Log the decoded token
         req.user = verified; // Attach the verified user to the request object
@@ -21,6 +24,5 @@ const authenticateToken = (req, res, next) => {
         res.status(403).json({ message: "Invalid token. Access forbidden." });
     }
 };
-
 
 module.exports = authenticateToken;

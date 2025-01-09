@@ -1,6 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 // Styled components for the navbar
@@ -62,15 +61,15 @@ const LogoutButton = styled.button`
   }
 `;
 
-const Navbar = () => {
+const Navbar = ({ setIsAuthenticated }) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
     // Remove the token from localStorage
     localStorage.removeItem('token');
 
-    // Optionally, clear additional user state if stored
-    // setIsAuthenticated(false); // If using a state variable for authentication
+    // Clear the authentication state
+    setIsAuthenticated(false);
 
     // Redirect to login page
     navigate('/login');
@@ -78,9 +77,9 @@ const Navbar = () => {
 
   return (
     <NavbarContainer>
-      <Logo>MyApp</Logo>
+      <Logo>FinanceTracker</Logo>
       <NavList>
-        <NavItem><NavLink to="/">Home</NavLink></NavItem>
+        <NavItem><NavLink to="/home">Home</NavLink></NavItem>
         <NavItem><NavLink to="/profile">Profile</NavLink></NavItem>
         <NavItem><NavLink to="/transaction-history">Transaction History</NavLink></NavItem>
         <NavItem><LogoutButton onClick={handleLogout}>Logout</LogoutButton></NavItem>

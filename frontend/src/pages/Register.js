@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import authService from '../services/auth';
 import styled from 'styled-components';
 
-// Styled components for Register page
+// Styled components for Register page (same as before)
 const Container = styled.div`
   max-width: 500px;
   margin: 0 auto;
@@ -42,7 +42,7 @@ const Form = styled.form`
     border: 1px solid #ddd;
     border-radius: 4px;
     outline: none;
-    
+
     &:focus {
       border-color: #007bff;
     }
@@ -87,11 +87,11 @@ const ErrorMessage = styled.p`
 const RedirectLink = styled.p`
   text-align: center;
   font-size: 16px;
-  
+
   a {
     color: #007bff;
     text-decoration: none;
-    
+
     &:hover {
       text-decoration: underline;
     }
@@ -102,17 +102,33 @@ const RedirectLink = styled.p`
   }
 `;
 
+
 const Register = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [passwordError, setPasswordError] = useState('');  // New state for password error
   const [loading, setLoading] = useState(false);  // New loading state
   const navigate = useNavigate(); // Using navigate for React Router v6
+
+  const validatePassword = (password) => {
+    if (password.length < 8) {
+      setPasswordError('Password must be at least 8 characters long');
+    } else {
+      setPasswordError('');
+    }
+  };
 
   const handleRegister = async (e) => {
     e.preventDefault();
     setLoading(true);  // Start loading
+
+    // Client-side validation for password
+    if (passwordError) {
+      setLoading(false);
+      return; // Prevent form submission if there's an error
+    }
 
     try {
       // Call register service from authService
@@ -150,11 +166,15 @@ const Register = () => {
           type="password"
           placeholder="Password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => {
+            setPassword(e.target.value);
+            validatePassword(e.target.value);  // Validate password on change
+          }}
           required
         />
+        {passwordError && <ErrorMessage>{passwordError}</ErrorMessage>}
         {error && <ErrorMessage>{error}</ErrorMessage>}
-        <button type="submit" disabled={loading}>
+        <button type="submit" disabled={loading || passwordError}>
           {loading ? 'Registering...' : 'Register'}
         </button>
       </Form>

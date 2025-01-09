@@ -1,8 +1,8 @@
-import React from 'react';
+// Chart Component
+import React, { useEffect, useMemo, useState, useCallback} from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
 import styled from 'styled-components';
 
-// Styled components for the chart
 const Container = styled.div`
   background-color: #fff;
   padding: 20px;
@@ -22,90 +22,98 @@ const Message = styled.p`
   font-family: 'Arial', sans-serif;
 `;
 
-const Chart = ({ transactions, totalBudget }) => {
-  console.log("Transactions in Chart:", transactions); // Debug log
-  console.log("Total Budget:", totalBudget); // Debug log to check totalBudget
+const Chart = ({ transactions, totalBudget, onColorMappingChange }) => {
+  const [expenseData, setExpenseData] = useState({});
+  const [remainingBudget, setRemainingBudget] = useState(0);
 
-  // Check if totalBudget is available
-  if (totalBudget === undefined || totalBudget === null || isNaN(totalBudget)) {
-    return (
-      <Container>
-        <Message>Error: Total Budget is missing or invalid.</Message>
-      </Container>
-    );
-  }
+  useEffect(() => {
+    if (transactions && totalBudget) {
+      const data = transactions
+        .filter(transaction => transaction.category === 'expense')
+        .reduce((acc, curr) => {
+          if (curr.subcategory) {
+            acc[curr.subcategory] = (acc[curr.subcategory] || 0) + curr.amount;
+          }
+          return acc;
+        }, {});
 
-  // Check if transactions exist
-  if (!transactions || transactions.length === 0) {
-    return (
-      <Container>
-        <Message>No transactions available. Add some expenses to see the chart.</Message>
-      </Container>
-    );
-  }
+      setExpenseData(data);
 
-  // Group the expenses by subcategory
-  const expenseData = transactions
-    .filter(transaction => transaction.category === 'expense') // Filter out non-expense transactions
-    .reduce((acc, curr) => {
-      if (curr.subcategory) {  // Ensure subcategory exists
-        acc[curr.subcategory] = (acc[curr.subcategory] || 0) + curr.amount;
+      const totalExpenses = Object.values(data).reduce((sum, value) => sum + value, 0);
+      setRemainingBudget(totalBudget - totalExpenses);
+    }
+  }, [transactions, totalBudget]); // Corrected to include dependencies
+
+  const data = useMemo(() => {
+    if (!expenseData || Object.keys(expenseData).length === 0) return [];
+    
+    const chartData = [
+      ...Object.keys(expenseData).map(subcategory => ({
+        name: subcategory,
+        value: expenseData[subcategory],
+      })),
+      {
+        name: 'Remaining Budget',
+        value: remainingBudget < 0 ? 0 : remainingBudget,
+      },
+    ];
+
+    return chartData;
+  }, [expenseData, remainingBudget]);
+
+  const subcategoryColors = useMemo(() => {
+    const COLORS = [
+      '#FF6384', '#36A2EB', '#FFCE56', '#4CAF50', '#FF9800',
+      '#FF5733', '#C70039', '#900C3F', '#581845', '#FFC300' // Exclude gray here
+    ];
+
+    const colors = {};
+    data.forEach((entry, index) => {
+      if (entry.name !== 'Remaining Budget') {
+        colors[entry.name] = COLORS[index % COLORS.length];
       }
-      return acc;
-    }, {});
+    });
 
-  console.log("Grouped Expense Data:", expenseData); // Debug log to see the grouped data
+    return colors;
+  }, [data]); // Corrected to include data as dependency
 
-  // Sum all expenses
-  const totalExpenses = Object.values(expenseData).reduce((acc, amount) => acc + amount, 0);
-  console.log("Total Expenses:", totalExpenses); // Debug log to see the sum of expenses
+  // Use useCallback to prevent re-creating this function on each render
+  const memoizedOnColorMappingChange = useCallback(() => {
+    onColorMappingChange(subcategoryColors);
+  }, [onColorMappingChange, subcategoryColors]);
 
-  // Calculate remaining budget
-  const remainingBudget = totalBudget - totalExpenses;
-  console.log("Remaining Budget:", remainingBudget); // Debug log to check remaining budget
+  useEffect(() => {
+    memoizedOnColorMappingChange(); // Safe usage of memoized function
+  }, [memoizedOnColorMappingChange]); // Corrected to use memoized version
 
-  // Prepare data for Recharts
-  const data = [
-    ...Object.keys(expenseData).map((subcategory) => ({
-      name: subcategory,
-      value: expenseData[subcategory],
-    })),
-    {
-      name: 'Remaining Budget',
-      value: remainingBudget,
-    },
-  ];
-
-  // Define the colors for each slice (using a light gray for remaining budget)
-  const COLORS = [
-    '#FF6384', '#36A2EB', '#FFCE56', '#4CAF50', '#FF9800',
-    '#FF5733', '#C70039', '#900C3F', '#581845', '#FFC300', '#E0E0E0'  // Grayish color for remaining budget
-  ];
+  if (!totalBudget || !transactions || transactions.length === 0) {
+    return (
+      <Container>
+        <Message>{!totalBudget ? "Error: Total Budget is missing or invalid." : "No transactions available. Add some expenses to see the chart."}</Message>
+      </Container>
+    );
+  }
 
   return (
     <Container>
-      {Object.keys(expenseData).length > 0 ? (
-        <PieChart width={300} height={300}>
-          <Pie
-            data={data}
-            dataKey="value"
-            nameKey="name"
-            cx="50%"
-            cy="50%"
-            outerRadius={80}
-            fill="#8884d8"
-            label
-          >
-            {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={index === data.length - 1 ? '#E0E0E0' : COLORS[index % COLORS.length]} />
-            ))}
-          </Pie>
-          <Tooltip />
-          <Legend />
-        </PieChart>
-      ) : (
-        <Message>No transactions available. Add some expenses to see the chart.</Message>
-      )}
+      <PieChart width={300} height={300}>
+        <Pie
+          data={data}
+          dataKey="value"
+          nameKey="name"
+          cx="50%"
+          cy="50%"
+          outerRadius={80}
+          fill="#8884d8"
+          label
+        >
+          {data.map((entry, index) => (
+            <Cell key={`cell-${index}`} fill={index === data.length - 1 ? '#E0E0E0' : subcategoryColors[entry.name]} />
+          ))}
+        </Pie>
+        <Tooltip />
+        <Legend />
+      </PieChart>
     </Container>
   );
 };

@@ -5,6 +5,7 @@ const {
     getTransactions,
     updateTransaction,
     deleteTransaction,
+    getTransactionsBySubcategory, // Import the new method
 } = require('../controllers/transactionController');
 const authenticateToken = require('../middleware/authMiddleware');
 
@@ -13,6 +14,9 @@ router.post('/', authenticateToken, addTransaction);
 
 // Get all transactions for a user
 router.get('/', authenticateToken, getTransactions);
+
+// Get transactions by subcategory for a user
+router.get('/subcategory/:subcategory', authenticateToken, getTransactionsBySubcategory); // New route
 
 // Update a transaction
 router.put('/:transactionId', authenticateToken, updateTransaction);

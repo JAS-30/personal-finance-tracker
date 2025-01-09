@@ -65,36 +65,78 @@ const updateTransaction = async (req, res) => {
     const updates = req.body;
 
     try {
-        const updatedTransaction = await Transaction.findByIdAndUpdate(transactionId, updates, {
-            new: true,
-        });
+        const updatedTransaction = await Transaction.findById(transactionId);
 
-        if (!updatedTransaction) return res.status(404).json({ message: 'Transaction not found' });
+        if (!updatedTransaction) {
+            return res.status(404).json({ message: 'Transaction not found' });
+        }
 
-        res.status(200).json({ message: 'Transaction updated successfully!', transaction: updatedTransaction });
+        // Log the decoded user to ensure it's correctly attached to the request
+        console.log('User from Token:', req.user);
+
+        // Check if the user is authorized to update this transaction
+        if (updatedTransaction.userId.toString() !== req.user.id) {
+            return res.status(403).json({ message: 'Unauthorized to update this transaction' });
+        }
+
+        // Proceed with updating the transaction
+        const updated = await Transaction.findByIdAndUpdate(transactionId, updates, { new: true });
+        res.status(200).json({ message: 'Transaction updated successfully!', transaction: updated });
     } catch (error) {
         res.status(500).json({ message: 'Error updating transaction', error: error.message });
     }
 };
 
-// Delete a transaction
-const deleteTransaction = async (req, res) => {
+  
+  // Delete a transaction
+  const deleteTransaction = async (req, res) => {
     const { transactionId } = req.params;
+  
+    try {
+      const deletedTransaction = await Transaction.findById(transactionId);
+  
+      if (!deletedTransaction) {
+        return res.status(404).json({ message: 'Transaction not found' });
+      }
+  
+      // Check if the user is authorized to delete this transaction
+      if (deletedTransaction.userId.toString() !== req.user.id) {
+        return res.status(403).json({ message: 'Unauthorized to delete this transaction' });
+      }
+  
+      // Proceed with deleting the transaction
+      await Transaction.findByIdAndDelete(transactionId);
+      res.status(200).json({ message: 'Transaction deleted successfully!' });
+    } catch (error) {
+      res.status(500).json({ message: 'Error deleting transaction', error: error.message });
+    }
+  };
+  
+  // Get transactions by subcategory for a user
+const getTransactionsBySubcategory = async (req, res) => {
+    const { subcategory } = req.params;  // or use req.query if you prefer query parameters
+    const { id: userId } = req.user;  // Extract userId from the token (req.user)
+
+    if (!subcategory) {
+        return res.status(400).json({ message: 'Subcategory must be provided.' });
+    }
 
     try {
-        const deletedTransaction = await Transaction.findByIdAndDelete(transactionId);
-
-        if (!deletedTransaction) return res.status(404).json({ message: 'Transaction not found' });
-
-        res.status(200).json({ message: 'Transaction deleted successfully!' });
+        console.log("Fetching transactions for user:", userId, "and subcategory:", subcategory);
+        const transactions = await Transaction.find({ userId, subcategory }).sort({ date: -1 });
+        console.log("Fetched transactions:", transactions);
+        res.status(200).json(transactions);
     } catch (error) {
-        res.status(500).json({ message: 'Error deleting transaction', error: error.message });
+        console.error("Error fetching transactions by subcategory:", error.message);
+        res.status(500).json({ message: 'Error fetching transactions by subcategory', error: error.message });
     }
 };
+
 
 module.exports = {
     addTransaction,
     getTransactions,
     updateTransaction,
     deleteTransaction,
+    getTransactionsBySubcategory,
 };

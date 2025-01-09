@@ -1,4 +1,3 @@
-// Login.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import authService from '../services/auth';
@@ -13,6 +12,7 @@ const Container = styled.div`
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   font-family: 'Arial', sans-serif;
   background-color: #f8f9fa;
+
   @media (max-width: 768px) {
     max-width: 90%;
     padding: 15px;
@@ -24,6 +24,7 @@ const Heading = styled.h2`
   text-align: center;
   color: #333;
   margin-bottom: 20px;
+
   @media (max-width: 768px) {
     font-size: 24px;
   }
@@ -39,6 +40,7 @@ const Form = styled.form`
     font-size: 16px;
     border: 1px solid #ccc;
     border-radius: 4px;
+    width: 100%;
   }
 
   input:focus {
@@ -55,6 +57,7 @@ const Form = styled.form`
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s;
+    width: 100%;
 
     &:hover {
       background-color: #0056b3;
@@ -75,6 +78,7 @@ const ErrorMessage = styled.p`
   color: red;
   text-align: center;
   font-size: 14px;
+
   @media (max-width: 768px) {
     font-size: 12px;
   }
@@ -83,6 +87,7 @@ const ErrorMessage = styled.p`
 const RegisterLink = styled.p`
   text-align: center;
   font-size: 14px;
+
   a {
     color: #007bff;
     text-decoration: none;
@@ -91,10 +96,12 @@ const RegisterLink = styled.p`
       text-decoration: underline;
     }
   }
+
   @media (max-width: 768px) {
     font-size: 12px;
   }
 `;
+
 
 const Login = ({ setIsAuthenticated }) => {
   const [email, setEmail] = useState('');
@@ -108,12 +115,10 @@ const Login = ({ setIsAuthenticated }) => {
     try {
       const user = await authService.login({ email, password });
 
-      console.log(user);
-
       if (user && user.token) {
-        localStorage.setItem('token', user.token);
-        setIsAuthenticated(true); // Update authentication state
-        navigate('/home');
+        localStorage.setItem('token', user.token); // Store the token
+        setIsAuthenticated(true); // Update authentication state in parent (App.js)
+        navigate('/home'); // Redirect to home after successful login
       } else {
         setError('Invalid credentials or server error');
       }

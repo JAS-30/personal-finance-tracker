@@ -19,7 +19,11 @@ const handleError = (error) => {
 // Register user
 const register = async (userData) => {
   try {
-    const response = await axios.post(`${API_URL}/register`, userData);
+    const response = await axios.post(`${API_URL}/register`, userData, {
+      headers: {
+        'Content-Type': 'application/json',  // Ensure the header is set to JSON
+      },
+    });
     return response.data;
   } catch (error) {
     throw new Error(handleError(error));
@@ -50,7 +54,6 @@ const getProfile = async (token) => {
   }
 };
 
-
 // Update user budget
 const updateBudget = async (userId, budget, token) => {
   try {
@@ -70,7 +73,6 @@ const updateBudget = async (userId, budget, token) => {
   }
 };
 
-
 // Delete user account
 const deleteAccount = async (userId, token) => {
   try {
@@ -85,6 +87,39 @@ const deleteAccount = async (userId, token) => {
   }
 };
 
+// Reset user data (reset budget and delete transactions)
+const resetUserData = async (userId, token) => {
+  try {
+    const response = await axios.put(`${API_URL}/reset-data/${userId}`, {}, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(handleError(error));
+  }
+};
+
+// Update user email
+const updateEmail = async (userId, email, token) => {
+  try {
+    const response = await axios.put(`${API_URL}/email/${userId}`, 
+      { newEmail: email }, // Correct key name to match backend
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(handleError(error));
+  }
+};
+
+
 // Assign the object to a variable and export
 const authService = {
   register,
@@ -92,6 +127,8 @@ const authService = {
   getProfile,
   updateBudget,
   deleteAccount,
+  resetUserData,
+  updateEmail // Add the new function to the export
 };
 
 export default authService;

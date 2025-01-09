@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 // Styled components for the form
@@ -12,31 +12,53 @@ const FormContainer = styled.div`
 
   @media (max-width: 768px) {
     padding: 15px;
+    margin: 10px;
+  }
+
+  @media (max-width: 480px) {
+    max-width: 100%;
+    padding: 10px;
   }
 `;
 
 const Input = styled.input`
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   margin: 10px 0;
   border-radius: 4px;
   border: 1px solid #ddd;
   font-size: 16px;
+
+  @media (max-width: 768px) {
+    padding: 10px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 14px;
+  }
 `;
 
 const Select = styled.select`
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   margin: 10px 0;
   border-radius: 4px;
   border: 1px solid #ddd;
   font-size: 16px;
+
+  @media (max-width: 768px) {
+    padding: 10px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 14px;
+  }
 `;
 
 const Button = styled.button`
   background-color: #4CAF50;
   color: white;
-  padding: 10px;
+  padding: 12px;
   width: 100%;
   border-radius: 4px;
   border: none;
@@ -46,14 +68,37 @@ const Button = styled.button`
   &:hover {
     background-color: #45a049;
   }
+
+  @media (max-width: 768px) {
+    padding: 10px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 14px;
+  }
 `;
 
-const ExpenseForm = ({ onAddTransaction }) => {
+
+const ExpenseForm = ({ onAddTransaction, totalBudget }) => {
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('expense');
   const [subcategory, setSubcategory] = useState('');
   const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
+  const [minDate, setMinDate] = useState('');
+  const [maxDate, setMaxDate] = useState('');
+
+  useEffect(() => {
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    
+    const firstDay = `${year}-${month}-01`;
+    const lastDay = new Date(year, currentDate.getMonth() + 1, 0).toISOString().split('T')[0];
+    
+    setMinDate(firstDay);
+    setMaxDate(lastDay);
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -65,7 +110,6 @@ const ExpenseForm = ({ onAddTransaction }) => {
         description,
         date,
       };
-      console.log('Transaction payload:', transaction); // Log payload
       onAddTransaction(transaction);
       setAmount('');
       setCategory('expense');
@@ -105,10 +149,12 @@ const ExpenseForm = ({ onAddTransaction }) => {
         <Input
           type="date"
           value={date}
+          min={minDate}
+          max={maxDate}
           onChange={(e) => setDate(e.target.value)}
           required
         />
-        <Button type="submit">Add Transaction</Button>
+        <Button type="submit" disabled={totalBudget <= 0}>Add Transaction</Button>
       </form>
     </FormContainer>
   );

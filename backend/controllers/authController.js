@@ -11,26 +11,31 @@ const registerUser = [
     body('email').isEmail().withMessage('Valid email is required'),
     body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters long'),
     async (req, res) => {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
-        }
-
-        const { username, email, password } = req.body;
-        try {
-            const existingUser = await User.findOne({ email });
-            if (existingUser) return res.status(400).json({ message: "User already exists." });
-
-            const hashedPassword = await bcrypt.hash(password, 10);
-            const user = new User({ username, email, passwordHash: hashedPassword });
-            await user.save();
-
-            res.status(201).json({ message: "User registered successfully." });
-        } catch (error) {
-            res.status(500).json({ error: error.message });
-        }
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        console.log('Validation errors:', errors.array()); // Log validation errors
+        return res.status(400).json({ errors: errors.array() });
+      }
+  
+      const { username, email, password } = req.body;
+      try {
+        const existingUser = await User.findOne({ email });
+        if (existingUser) return res.status(400).json({ message: "User already exists." });
+  
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const user = new User({ username, email, passwordHash: hashedPassword });
+        await user.save();
+  
+        res.status(201).json({ message: "User registered successfully." });
+      } catch (error) {
+        console.error('Error registering user:', error); // Log any unexpected errors
+        res.status(500).json({ error: error.message });
+      }
     },
-];
+  ];
+  
+
+
 
 // Login a user
 const loginUser = async (req, res) => {
@@ -124,10 +129,91 @@ const deleteUserAccount = async (req, res) => {
     }
 };
 
+// Reset user data (budget and transactions)
+const resetUserData = async (req, res) => {
+    const { userId } = req.params;
+
+    try {
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({ message: "User not found." });
+
+        // Reset budget
+        user.budget.total = 0;
+        user.budget.remaining = 0;
+
+        // Clear transactions related to the user
+        user.transactions = [];
+
+        // Optionally, delete transactions from the database as well
+        await Transaction.deleteMany({ userId: user._id });
+
+        // Save the updated user data
+        await user.save();
+
+        res.status(200).json({ message: "User data (budget and transactions) has been reset successfully." });
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to reset user data.' });
+    }
+};
+
+
+// Edit user email
+const editUserEmail = async (req, res) => {
+    const { userId } = req.params;
+    const { newEmail } = req.body;
+
+    try {
+        console.log('Request to update email for user:', userId); // Log userId
+        console.log('New email to update:', newEmail); // Log newEmail
+
+        // Validate the new email
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            console.log('Validation errors:', errors.array());  // Log validation errors
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        // Find the user by userId
+        const user = await User.findById(userId);
+        if (!user) {
+            console.log(`User with ID ${userId} not found`);  // Log user not found error
+            return res.status(404).json({ message: "User not found." });
+        }
+
+        // Check if the new email already exists
+        const existingUser = await User.findOne({ email: newEmail });
+        if (existingUser) {
+            console.log(`Email ${newEmail} is already in use`);  // Log email already in use error
+            return res.status(400).json({ message: "Email already in use." });
+        }
+
+        // Update the email
+        user.email = newEmail;
+        await user.save();
+        console.log('Email updated successfully for user:', userId);  // Log success
+
+        res.status(200).json({ message: "Email updated successfully." });
+    } catch (error) {
+        // Log the full error details for debugging
+        console.error('Error updating email:', error); // Log the exact error
+        res.status(500).json({ error: error.message || 'An unexpected error occurred.' });
+    }
+};
+
+// Validate email field
+const validateEmail = [
+    body('newEmail').isEmail().withMessage('Valid email is required'),
+];
+
+
+// Export the function along with the others
 module.exports = {
     registerUser,
     loginUser,
     getUserProfile,
     updateUserBudget,
     deleteUserAccount,
+    resetUserData,
+    editUserEmail,
+    validateEmail,
 };

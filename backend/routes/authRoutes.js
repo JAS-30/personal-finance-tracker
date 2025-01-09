@@ -5,7 +5,10 @@ const {
     loginUser,
     getUserProfile,
     updateUserBudget,
-    deleteUserAccount
+    deleteUserAccount,
+    resetUserData,
+    editUserEmail, // Import the editUserEmail function
+    validateEmail  // Import the validateEmail middleware
 } = require('../controllers/authController');
 const authenticateToken = require('../middleware/authMiddleware');
 
@@ -23,5 +26,11 @@ router.put('/budget/:userId', authenticateToken, updateUserBudget);
 
 // Route for deleting user account and related transactions (protected route)
 router.delete('/delete-account/:userId', authenticateToken, deleteUserAccount);
+
+// Route for resetting user data (budget and transactions) (protected route)
+router.put('/reset-data/:userId', authenticateToken, resetUserData);
+
+// Route for editing user email (protected route)
+router.put('/email/:userId', authenticateToken, validateEmail, editUserEmail);
 
 module.exports = router;

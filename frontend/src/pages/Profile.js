@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import authService from '../services/auth';
-import apiService from '../services/api'; // Import the api service for fetching transactions
+import apiService from '../services/api';
 import styled from 'styled-components';
 
-// Styled components for Profile page
 const Container = styled.div`
   max-width: 600px;
   margin: 0 auto;
@@ -68,6 +67,72 @@ const EditButton = styled.button`
   }
 `;
 
+const SaveButton = styled.button`
+  padding: 12px 20px;
+  font-size: 16px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  width: 100%;
+  margin-top: 20px;
+
+  &:hover {
+    background-color: #218838;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 14px;
+    padding: 10px 16px;
+  }
+`;
+
+const CancelButton = styled.button`
+  padding: 12px 20px;
+  font-size: 16px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  width: 100%;
+  margin-top: 20px;
+
+  &:hover {
+    background-color: #c82333;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 14px;
+    padding: 10px 16px;
+  }
+`;
+
+const DeleteButton = styled.button`
+  padding: 12px 20px;
+  font-size: 16px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  width: 100%;
+  margin-top: 20px;
+
+  &:hover {
+    background-color: #c82333;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 14px;
+    padding: 10px 16px;
+  }
+`;
+
 const ErrorMessage = styled.p`
   color: red;
   text-align: center;
@@ -82,19 +147,20 @@ const Profile = () => {
   const [user, setUser] = useState(null);
   const [transactions, setTransactions] = useState([]);
   const [error, setError] = useState('');
+  const [editMode, setEditMode] = useState(false);
+  const [newEmail, setNewEmail] = useState('');
   const navigate = useNavigate();
-  const token = localStorage.getItem('token'); // Only get token from localStorage
+  const token = localStorage.getItem('token');
 
   useEffect(() => {
     if (!token) {
-      navigate('/login'); // Redirect to login if no token found
+      navigate('/login');
     } else {
       const fetchUserProfile = async () => {
         try {
-          const profile = await authService.getProfile(token); // Only pass token to get profile
+          const profile = await authService.getProfile(token);
           setUser(profile);
-
-          // Fetch transactions after profile is fetched
+          setNewEmail(profile.email);
           const fetchedTransactions = await apiService.getTransactions(token);
           setTransactions(fetchedTransactions);
         } catch (err) {
@@ -103,29 +169,86 @@ const Profile = () => {
       };
       fetchUserProfile();
     }
-  }, [navigate, token]); // Effect will run on token change
+  }, [navigate, token]);
+
+  const handleDeleteAccount = async () => {
+    if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+      try {
+        const response = await authService.deleteAccount(user._id, token);
+        alert(response.message);
+        localStorage.removeItem('token');
+        navigate('/login');
+      } catch (err) {
+        alert('Failed to delete account. Please try again.');
+        console.error(err);
+      }
+    }
+  };
+
+  const handleEditProfile = () => {
+    setEditMode(true);
+  };
+
+  const handleSaveEmail = async () => {
+    try {
+      await authService.updateEmail(user._id, newEmail, token);
+      setUser({ ...user, email: newEmail });
+      setEditMode(false);
+      alert('Email updated successfully');
+    } catch (err) {
+      alert('Failed to update email. Please try again.');
+      console.error(err);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditMode(false);
+    setNewEmail(user.email);
+  };
 
   if (error) {
     return <ErrorMessage>{error}</ErrorMessage>;
   }
 
-  if (!user || transactions.length === 0) {
-    return <div>Loading...</div>; // You can replace this with a loading spinner if you prefer
+  if (!user) {
+    return <div>Loading...</div>;
   }
 
-  // Calculate the remaining budget by subtracting total expenses from the total budget
-  const totalExpenses = transactions.reduce((total, transaction) => total + transaction.amount, 0);
+  const totalExpenses = transactions
+    .filter(transaction => transaction.category === 'expense')
+    .reduce((total, transaction) => total + transaction.amount, 0);
+
   const remainingBudget = user.budget.total - totalExpenses;
 
   return (
     <Container>
       <Heading>{user.username}'s Profile</Heading>
       <Info>
-        <p><strong>Email:</strong> {user.email}</p>
+        <p>
+          <strong>Email:</strong> {editMode ? (
+            <input
+              type="email"
+              value={newEmail}
+              onChange={(e) => setNewEmail(e.target.value)}
+            />
+          ) : (
+            user.email
+          )}
+        </p>
         <p><strong>Budget:</strong> ${user.budget.total}</p>
-        <p><strong>Remaining Budget:</strong> ${remainingBudget}</p> {/* Display the calculated remaining budget */}
+        <p><strong>Remaining Budget:</strong> ${remainingBudget}</p>
       </Info>
-      <EditButton>Edit Profile</EditButton>
+      {editMode ? (
+        <>
+          <SaveButton onClick={handleSaveEmail}>Save</SaveButton>
+          <CancelButton onClick={handleCancelEdit}>Cancel</CancelButton>
+        </>
+      ) : (
+        <>
+          <EditButton onClick={handleEditProfile}>Edit Profile</EditButton>
+          <DeleteButton onClick={handleDeleteAccount}>Delete Account</DeleteButton>
+        </>
+      )}
     </Container>
   );
 };

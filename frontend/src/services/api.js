@@ -4,6 +4,7 @@ const API_URL = 'http://localhost:5000/api'; // Replace with your actual API URL
 
 // Get all transactions for a user
 const getTransactions = async (token) => {
+  console.log(token);
   if (!token) {
     console.error("No token provided");
     throw new Error("Token is required to fetch transactions");
@@ -66,13 +67,28 @@ const addTransaction = async (transactionData, token) => {
 
 // Update a transaction
 const updateTransaction = async (transactionId, transactionData, token) => {
-  const response = await axios.put(`${API_URL}/transactions/${transactionId}`, transactionData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  return response.data;
+  try {
+    console.log('Updating transaction with token:', token); // Log the token being sent
+
+    const response = await axios.put(`${API_URL}/transactions/${transactionId}`, transactionData, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Ensure token is passed here
+      },
+    });
+
+    console.log('Transaction updated successfully:', response.data); // Log the response
+
+    return response.data;  // Return the updated transaction data
+  } catch (error) {
+    console.error('Error response:', error.response?.data);
+    console.error('Error status:', error.response?.status);
+    throw error;
+  }
 };
+
+
+
+
 
 // Delete a transaction
 const deleteTransaction = async (transactionId, token) => {
@@ -84,12 +100,36 @@ const deleteTransaction = async (transactionId, token) => {
   return response.data;
 };
 
+// Get transactions by subcategory for a user
+const getTransactionsBySubcategory = async (subcategory, token) => {
+  if (!token) {
+    throw new Error("Token is required to fetch transactions");
+  }
+
+  try {
+    const response = await axios.get(`${API_URL}/transactions/subcategory/${subcategory}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error("Failed to fetch transactions: Invalid status");
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+
 // Assign the object to a variable and export
 const apiService = {
   getTransactions,
   addTransaction,
   updateTransaction,
   deleteTransaction,
+  getTransactionsBySubcategory,
 };
 
 export default apiService;
