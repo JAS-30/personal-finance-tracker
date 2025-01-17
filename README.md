@@ -27,9 +27,9 @@ You need `Node.js` and `npm` installed. If you don't have them, you can download
 
 ### Installation
 
-1. Clone the repository:
+1. Clone the repository (remember to use the latest version from branch):
    ```bash
-   git clone https://github.com/yourusername/personal-finance-tracker.git
+   git clone https://github.com/JAS-30/personal-finance-tracker.git
 
 2. Navigate into the project directory:
    ```bash
@@ -37,12 +37,12 @@ You need `Node.js` and `npm` installed. If you don't have them, you can download
 
 3. Install the dependencies for the frontend:
    ```bash
+   cd frontend
    npm install
 
-4. For the backend (if applicable), install the dependencies:
+4. For the backend, install the dependencies:
    ```bash
    cd backend
-   
    npm install
 
 ### Running the Application
