@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api'; // Replace with your actual API URL
+const API_URL = 'http://localhost:5000/api'; 
 
 // Get all transactions for a user
 const getTransactions = async (token) => {
@@ -33,7 +33,6 @@ const getTransactions = async (token) => {
       throw new Error("Failed to fetch transactions: Invalid status");
     }
   } catch (error) {
-    // Log detailed error information
     console.error("Error fetching transactions:", error.response ? error.response.data : error.message);
     throw error;  // Re-throw the error for further handling in the calling component
   }
@@ -42,7 +41,7 @@ const getTransactions = async (token) => {
 
 // Add a new transaction
 const addTransaction = async (transactionData, token) => {
-  console.log('Transaction data:', transactionData); // Log the transaction data before sending the request
+  console.log('Transaction data:', transactionData); 
   try {
     const response = await axios.post(`${API_URL}/transactions/`, transactionData, {
       headers: {
@@ -51,14 +50,14 @@ const addTransaction = async (transactionData, token) => {
     });
     return response.data; // Return the data if the request is successful
   } catch (error) {
-    // Log the error response
+    
     if (error.response) {
       console.error('Error response:', error.response.data);
       console.error('Error status:', error.response.status);
     } else {
       console.error('Error message:', error.message);
     }
-    throw error; // Re-throw the error to allow further handling upstream
+    throw error; 
   }
 };
 
@@ -68,17 +67,17 @@ const addTransaction = async (transactionData, token) => {
 // Update a transaction
 const updateTransaction = async (transactionId, transactionData, token) => {
   try {
-    console.log('Updating transaction with token:', token); // Log the token being sent
+    console.log('Updating transaction with token:', token); 
 
     const response = await axios.put(`${API_URL}/transactions/${transactionId}`, transactionData, {
       headers: {
-        Authorization: `Bearer ${token}`, // Ensure token is passed here
+        Authorization: `Bearer ${token}`, 
       },
     });
 
-    console.log('Transaction updated successfully:', response.data); // Log the response
+    console.log('Transaction updated successfully:', response.data); 
 
-    return response.data;  // Return the updated transaction data
+    return response.data;  
   } catch (error) {
     console.error('Error response:', error.response?.data);
     console.error('Error status:', error.response?.status);
@@ -123,7 +122,7 @@ const getTransactionsBySubcategory = async (subcategory, token) => {
   }
 };
 
-// Assign the object to a variable and export
+
 const apiService = {
   getTransactions,
   addTransaction,

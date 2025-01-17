@@ -7,8 +7,8 @@ const {
     updateUserBudget,
     deleteUserAccount,
     resetUserData,
-    editUserEmail, // Import the editUserEmail function
-    validateEmail  // Import the validateEmail middleware
+    editUserEmail, 
+    validateEmail  
 } = require('../controllers/authController');
 const authenticateToken = require('../middleware/authMiddleware');
 

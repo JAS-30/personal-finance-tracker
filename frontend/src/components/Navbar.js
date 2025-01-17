@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-// Styled components for the navbar
+
 const NavbarContainer = styled.nav`
   background-color: #333;
   width: 100%;
@@ -39,7 +39,7 @@ const NavList = styled.ul`
   margin: 0;
 
   @media (max-width: 768px) {
-    display: ${({ isMobileMenuOpen }) => (isMobileMenuOpen ? 'block' : 'none')};
+    display: ${({ $mobileMenuOpen }) => ($mobileMenuOpen ? 'block' : 'none')};
     position: absolute;
     top: 60px;
     left: 0;
@@ -48,11 +48,12 @@ const NavList = styled.ul`
     padding: 0;
     margin: 0;
     z-index: 1000;
+    flex-direction: column;
   }
 
   @media (min-width: 1024px) {
-    gap: 10px; /* Adjust gap for larger screens */
-    padding-right:50px;
+    gap: 10px;
+    padding-right: 50px;
   }
 `;
 
@@ -85,7 +86,7 @@ const LogoutButton = styled.button`
   border-radius: 5px;
   cursor: pointer;
   font-size: 16px;
-  margin-left: 20px; /* Add margin to the left to create space from the links */
+  margin-left: 20px;
 
   &:hover {
     background-color: #e53935;
@@ -124,34 +125,23 @@ const HamburgerMenu = styled.div`
 const Navbar = ({ setIsAuthenticated }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
-  
-  // References to detect clicks outside of the menu
+
   const navbarRef = useRef(null);
   const hamburgerRef = useRef(null);
 
   const handleLogout = () => {
-    // Remove the token from localStorage
     localStorage.removeItem('token');
-
-    // Clear the authentication state
     setIsAuthenticated(false);
-
-    // Redirect to login page
     navigate('/login');
   };
 
-  // Close the hamburger menu if clicked outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (navbarRef.current && !navbarRef.current.contains(event.target) && !hamburgerRef.current.contains(event.target)) {
         setIsMobileMenuOpen(false);
       }
     };
-
-    // Add the event listener
     document.addEventListener('mousedown', handleClickOutside);
-
-    // Clean up the event listener
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
@@ -165,7 +155,7 @@ const Navbar = ({ setIsAuthenticated }) => {
         <div />
         <div />
       </HamburgerMenu>
-      <NavList isMobileMenuOpen={isMobileMenuOpen}>
+      <NavList $mobileMenuOpen={isMobileMenuOpen}>
         <NavItem><NavLink to="/home">Home</NavLink></NavItem>
         <NavItem><NavLink to="/profile">Profile</NavLink></NavItem>
         <NavItem><NavLink to="/transaction-history">Transaction History</NavLink></NavItem>

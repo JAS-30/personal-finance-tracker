@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import authService from '../services/auth';
 import { BarChart, Bar, XAxis, YAxis, Cell, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-// Styled components for BudgetSummary
 const Container = styled.div`
   display: flex;
   justify-content: space-between;
@@ -114,13 +113,13 @@ const ChartContainer = styled.div`
 
 
 
-const BudgetSummary = ({ budget, userId, token, onBudgetUpdate, income, transactions = [] }) => {
+const BudgetSummary = ({ budget = {total: 0, remaining: 0}, userId, token, onBudgetUpdate, income, transactions = [] }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedBudget, setEditedBudget] = useState({
     total: budget.total,
     remaining: budget.remaining,
   });
-
+  
   const expenses = transactions.reduce((acc, transaction) => {
     if (transaction.category === 'expense') {
       acc += transaction.amount; // Sum the amount of all expense transactions
@@ -142,13 +141,18 @@ const BudgetSummary = ({ budget, userId, token, onBudgetUpdate, income, transact
   const handleSave = async () => {
     try {
       const updatedBudget = await authService.updateBudget(userId, editedBudget, token);
-      onBudgetUpdate(updatedBudget); // Notify parent of the changes
+      onBudgetUpdate(updatedBudget); 
+      setEditedBudget({
+        total: updatedBudget.total,
+        remaining: updatedBudget.remaining,
+      });
       setIsEditing(false);
     } catch (error) {
       alert('Failed to update budget. Please try again.');
       console.error(error);
     }
   };
+  
 
   const handleCancel = () => {
     setEditedBudget({
@@ -188,7 +192,7 @@ const BudgetSummary = ({ budget, userId, token, onBudgetUpdate, income, transact
           </ListItem>
           <ListItem>
             <strong>Remaining Budget:</strong>{' '}
-            ${(editedBudget.total - expenses || 0).toFixed(2)} {/* Subtract expenses from the total */}
+            ${(editedBudget.total - expenses || 0).toFixed(2)}
           </ListItem>
           <ListItem>
             <strong>Extra Incomes:</strong>{' '}

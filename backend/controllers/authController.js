@@ -56,7 +56,7 @@ const loginUser = async (req, res) => {
 
 // Get user profile
 const getUserProfile = async (req, res) => {
-    // Extract the token from the Authorization header
+    
     const token = req.headers['authorization']?.split(' ')[1]; // 'Bearer token'
   
     if (!token) {
@@ -64,7 +64,7 @@ const getUserProfile = async (req, res) => {
     }
   
     try {
-      // Verify and decode the token
+      
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
   
       // Extract the userId from the decoded token
@@ -83,7 +83,7 @@ const getUserProfile = async (req, res) => {
 // Update user budget
 const updateUserBudget = async (req, res) => {
     const { userId } = req.params;
-    const { total } = req.body;  // Remove monthlyLimit and yearlyLimit
+    const { total } = req.body; 
 
     try {
         const user = await User.findById(userId);
@@ -143,8 +143,6 @@ const resetUserData = async (req, res) => {
 
         // Clear transactions related to the user
         user.transactions = [];
-
-        // Optionally, delete transactions from the database as well
         await Transaction.deleteMany({ userId: user._id });
 
         // Save the updated user data
@@ -163,39 +161,39 @@ const editUserEmail = async (req, res) => {
     const { newEmail } = req.body;
 
     try {
-        console.log('Request to update email for user:', userId); // Log userId
-        console.log('New email to update:', newEmail); // Log newEmail
+        console.log('Request to update email for user:', userId);
+        console.log('New email to update:', newEmail);
 
         // Validate the new email
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            console.log('Validation errors:', errors.array());  // Log validation errors
+            console.log('Validation errors:', errors.array()); 
             return res.status(400).json({ errors: errors.array() });
         }
 
         // Find the user by userId
         const user = await User.findById(userId);
         if (!user) {
-            console.log(`User with ID ${userId} not found`);  // Log user not found error
+            console.log(`User with ID ${userId} not found`); 
             return res.status(404).json({ message: "User not found." });
         }
 
         // Check if the new email already exists
         const existingUser = await User.findOne({ email: newEmail });
         if (existingUser) {
-            console.log(`Email ${newEmail} is already in use`);  // Log email already in use error
+            console.log(`Email ${newEmail} is already in use`);  
             return res.status(400).json({ message: "Email already in use." });
         }
 
         // Update the email
         user.email = newEmail;
         await user.save();
-        console.log('Email updated successfully for user:', userId);  // Log success
+        console.log('Email updated successfully for user:', userId); 
 
         res.status(200).json({ message: "Email updated successfully." });
     } catch (error) {
         // Log the full error details for debugging
-        console.error('Error updating email:', error); // Log the exact error
+        console.error('Error updating email:', error);
         res.status(500).json({ error: error.message || 'An unexpected error occurred.' });
     }
 };

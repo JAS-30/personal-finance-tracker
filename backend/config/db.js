@@ -1,10 +1,8 @@
-// Import mongoose to handle MongoDB connection
+
 const mongoose = require('mongoose');
 
-// Function to connect to MongoDB
 const connectDB = async () => {
   try {
-    // Connect to MongoDB using the URI from .env
     await mongoose.connect(process.env.MONGO_URI);
     console.log('MongoDB connected successfully!');
   } catch (err) {
@@ -13,5 +11,4 @@ const connectDB = async () => {
   }
 };
 
-// Export the connectDB function
 module.exports = connectDB;

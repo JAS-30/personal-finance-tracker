@@ -14,15 +14,15 @@ connectDB();
 // Initialize the Express app
 const app = express();
 
-// Middleware
-app.use(express.json()); // Parse incoming JSON requests
-app.use(cors()); // Enable Cross-Origin Resource Sharing
+
+app.use(express.json()); 
+app.use(cors()); 
 
 // Routes
 app.use('/api/auth', authRoutes); // Authentication routes
 app.use('/api/transactions', transactionRoutes); // Transaction routes
 
-// Health check endpoint
+
 app.get('/', (req, res) => {
     res.send('API is running...');
 });

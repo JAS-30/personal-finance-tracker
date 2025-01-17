@@ -123,42 +123,51 @@ const Home = () => {
   const [colorMapping, setColorMapping] = useState({});
   const [isEditingBudget, setIsEditingBudget] = useState(false);
   const navigate = useNavigate();
-  const token = localStorage.getItem('token');
-
+  const [isLoading, setIsLoading] = useState(true);
+  // Memoizing checkMonthChange using useCallback to avoid re-creation
   const checkMonthChange = useCallback(() => {
     const currentDate = new Date();
     const lastSavedMonth = parseInt(localStorage.getItem('lastSavedMonth'), 10);
-    if (lastSavedMonth && currentDate.getMonth() > lastSavedMonth) {
-      // Handle month change logic
+    if (lastSavedMonth !== currentDate.getMonth()) {
+      // Handle month change logic here without directly updating state
       localStorage.setItem('lastSavedMonth', currentDate.getMonth());
     }
   }, []);
 
   useEffect(() => {
+    const token = localStorage.getItem('token'); 
+    
+    // If no token, we rely on Profile.js to handle the redirection
     if (!token) {
       navigate('/login');
-    } else {
-      const fetchData = async () => {
-        try {
-          const userProfile = await authService.getProfile(token);
-          setUser(userProfile);
-          setBudget(userProfile.budget || { total: 0, remaining: 0 });
-
-          const fetchedTransactions = await apiService.getTransactions(token);
-          setTransactions(fetchedTransactions);
-        } catch (err) {
-          console.error('Error fetching data:', err);
-          setError('Failed to fetch data');
-        }
-      };
-
-      fetchData();
+      return; // Prevent Home from rendering anything if token is null
     }
-
-    checkMonthChange(); // Ensure checkMonthChange is called on mount
-  }, [navigate, token, checkMonthChange]);
+  
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        console.log('Fetching data for token...');
+        const userProfile = await authService.getProfile(token);
+        setUser(userProfile);
+        setBudget(userProfile.budget || { total: 0, remaining: 0 });
+  
+        const fetchedTransactions = await apiService.getTransactions(token);
+        setTransactions(fetchedTransactions);
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        setError('Failed to fetch data');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    checkMonthChange();
+    fetchData();
+  }, [checkMonthChange, navigate]);
+  
+  
 
   const refreshTransactions = async () => {
+    const token = localStorage.getItem('token'); 
     try {
       const fetchedTransactions = await apiService.getTransactions(token);
       setTransactions(fetchedTransactions);
@@ -187,7 +196,7 @@ const Home = () => {
   }, [transactions, user]);
 
   const totalIncome = useMemo(() => {
-    if (!transactions || transactions.length === 0) return 0; // No income if no transactions
+    if (!transactions || transactions.length === 0) return 0;
 
     const incomeTransactions = transactions.filter((transaction) => transaction.category === 'income');
     return incomeTransactions.reduce((sum, transaction) => {
@@ -199,6 +208,7 @@ const Home = () => {
   }, [transactions]);
 
   const handleAddTransaction = async (transactionData) => {
+    const token = localStorage.getItem('token'); 
     try {
       await apiService.addTransaction(transactionData, token);
       setTransactions((prevTransactions) => [...prevTransactions, transactionData]);
@@ -208,10 +218,17 @@ const Home = () => {
     }
   };
 
-  const handleBudgetUpdate = (updatedBudget) => {
+  const handleBudgetUpdate = async (updatedBudget) => {
+    const token = localStorage.getItem('token'); 
     setBudget(updatedBudget);
-    // Send the updated budget to the backend if needed
-    // apiService.updateBudget(updatedBudget, token);
+    try {
+      const userId = user._id;
+      const response = await authService.updateBudget(userId, updatedBudget, token);
+      setBudget(response.budget || updatedBudget); 
+    } catch (err) {
+      console.error('Error updating budget:', err);
+      setError('Failed to update budget');
+    }
   };
 
   const handleColorMappingChange = (newColorMapping) => {
@@ -225,34 +242,31 @@ const Home = () => {
   if (error) {
     return <ErrorMessage>{error}</ErrorMessage>;
   }
+  // If the user is still loading, display a loading message
+  if (isLoading) {
+    return <div>Loading your profile...</div>;
+  }
 
   if (!user) {
     return <LoadingMessage>Loading your profile...</LoadingMessage>;
   }
 
-  // If there are no transactions, show the budget summary
   if (transactions.length === 0) {
     return (
       <Container>
         <Heading>Welcome, {user.username}</Heading>
         <p>You don't have any transactions yet. Start by adding your first one!</p>
-
-        {/* Budget Summary included */}
         <p>Your current budget summary:</p>
         <BudgetSummary
-          budget={{
-            total: budget.total,
-            remaining: budget.remaining,
-          }}
+          budget={{ total: budget.total, remaining: budget.remaining }}
           income={totalIncome}
           userId={user._id}
-          token={token}
+          token={localStorage.getItem('token')} 
           onBudgetUpdate={handleBudgetUpdate}
         />
-
         <ExpenseForm
           userId={user._id}
-          token={token}
+          token={localStorage.getItem('token')} 
           onAddTransaction={handleAddTransaction}
           totalBudget={budget.total}
         />
@@ -262,6 +276,7 @@ const Home = () => {
 
   const recentTransactions = transactions.slice(0, 3);
   const totalBudget = budget.total;
+
   if (totalBudget === undefined || isNaN(totalBudget)) {
     return <ErrorMessage>Total Budget is missing or invalid.</ErrorMessage>;
   }
@@ -272,7 +287,6 @@ const Home = () => {
     <Container>
       <Heading>Welcome, {user.username}</Heading>
 
-      {/* Budget Summary */}
       <p>Your budget summary:</p>
       {isEditingBudget ? (
         <div>
@@ -287,13 +301,10 @@ const Home = () => {
       ) : (
         <div>
           <BudgetSummary
-            budget={{
-              total: totalBudget,
-              remaining: adjustedRemainingBudget,
-            }}
+            budget={{ total: totalBudget, remaining: adjustedRemainingBudget }}
             income={totalIncome}
             userId={user._id}
-            token={token}
+            token={localStorage.getItem('token')} 
             onBudgetUpdate={handleBudgetUpdate}
             transactions={transactions}
           />
@@ -302,7 +313,7 @@ const Home = () => {
 
       <Section>
         <Subheading>Add New Transaction</Subheading>
-        <ExpenseForm userId={user._id} token={token} onAddTransaction={handleAddTransaction} totalBudget={totalBudget} />
+        <ExpenseForm userId={user._id} token={localStorage.getItem('token')} onAddTransaction={handleAddTransaction} totalBudget={totalBudget} />
       </Section>
 
       <Section>
@@ -324,21 +335,24 @@ const Home = () => {
           <TransactionList
             transactions={recentTransactions}
             refreshTransactions={refreshTransactions}
-            token={token}
+            token={localStorage.getItem('token')} 
             subcategoryColors={colorMapping}
           />
         </Section>
       )}
 
       <div>
-      <ButtonContainer>
-        <Button onClick={() => navigate('/profile')}>Go to Profile</Button>
-        <Button onClick={() => navigate('/transaction-history')}>View Transaction History</Button>
-      </ButtonContainer>
+        <ButtonContainer>
+          <Button onClick={() => navigate('/profile')}>Go to Profile</Button>
+          <Button onClick={() => navigate('/transaction-history')}>View Transaction History</Button>
+        </ButtonContainer>
       </div>
     </Container>
   );
 };
+
+
+
 
 export default Home;
 

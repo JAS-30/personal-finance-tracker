@@ -116,9 +116,9 @@ const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [passwordError, setPasswordError] = useState('');  // New state for password error
-  const [loading, setLoading] = useState(false);  // New loading state
-  const navigate = useNavigate(); // Using navigate for React Router v6
+  const [passwordError, setPasswordError] = useState('');  
+  const [loading, setLoading] = useState(false); 
+  const navigate = useNavigate(); 
 
   const validatePassword = (password) => {
     if (password.length < 8) {
@@ -139,13 +139,13 @@ const Register = () => {
     }
 
     try {
-      // Call register service from authService
+      
       await authService.register({ username, email, password });
 
       // Redirect to login after successful registration
       navigate('/login');
     } catch (err) {
-      // Handle error and set specific message
+      
       setError(err.message || 'Error during registration, please try again');
     } finally {
       setLoading(false);  // Stop loading

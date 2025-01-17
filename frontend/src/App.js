@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
-import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Home from './pages/Home';
 import Profile from './pages/Profile';
 import TransactionHistory from './pages/TransactionHistory';
 
@@ -15,14 +15,15 @@ function App() {
     if (!token) return false;
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
-      console.log('Token Payload:', payload);  // Log the token's payload to verify
+      console.log('Token Payload:', payload); 
       return payload.exp * 1000 > Date.now();  // Check if token is expired
     } catch (error) {
-      console.error('Token Validation Error:', error);  // Log if something goes wrong
+      console.error('Token Validation Error:', error);  
       return false;
     }
   };
 
+  // Check if token is valid on load
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token && validateToken(token)) {
@@ -32,7 +33,7 @@ function App() {
       console.log('No valid token found, setting authenticated to false');
       setIsAuthenticated(false);
     }
-  }, []); // Runs only on initial mount to validate token
+  }, [isAuthenticated]); // Run once on mount, not on auth state change
 
   // Ensure state updates on login to redirect properly
   const handleAuthentication = (authenticated) => {

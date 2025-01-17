@@ -28,7 +28,7 @@ const addTransaction = async (req, res) => {
             subcategory,
             description,
             date: formattedDate,
-            userId,  // Use userId here
+            userId,  
         });
 
         console.log('Transaction Created:', newTransaction);
@@ -44,16 +44,16 @@ const addTransaction = async (req, res) => {
 
 // Get all transactions for a user
 const getTransactions = async (req, res) => {
-    console.log("Incoming request:", req.headers); // Log the headers to see if the token is being passed
+    console.log("Incoming request:", req.headers); 
     const { id: userId } = req.user;  // Extract userId from the token (req.user)
 
     try {
-        console.log("Fetching transactions for user:", userId); // Log the userId
+        console.log("Fetching transactions for user:", userId); 
         const transactions = await Transaction.find({ userId }).sort({ date: -1 });
-        console.log("Fetched transactions:", transactions);  // Log the result
+        console.log("Fetched transactions:", transactions);  
         res.status(200).json(transactions);
     } catch (error) {
-        console.error("Error fetching transactions:", error.message);  // Log the error
+        console.error("Error fetching transactions:", error.message);  
         res.status(500).json({ message: 'Error fetching transactions', error: error.message });
     }
 };
@@ -70,9 +70,6 @@ const updateTransaction = async (req, res) => {
         if (!updatedTransaction) {
             return res.status(404).json({ message: 'Transaction not found' });
         }
-
-        // Log the decoded user to ensure it's correctly attached to the request
-        console.log('User from Token:', req.user);
 
         // Check if the user is authorized to update this transaction
         if (updatedTransaction.userId.toString() !== req.user.id) {
@@ -114,8 +111,8 @@ const updateTransaction = async (req, res) => {
   
   // Get transactions by subcategory for a user
 const getTransactionsBySubcategory = async (req, res) => {
-    const { subcategory } = req.params;  // or use req.query if you prefer query parameters
-    const { id: userId } = req.user;  // Extract userId from the token (req.user)
+    const { subcategory } = req.params;  
+    const { id: userId } = req.user;  
 
     if (!subcategory) {
         return res.status(400).json({ message: 'Subcategory must be provided.' });

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import apiService from '../services/api'; // Import the API service
+import apiService from '../services/api'; 
 
-// Styled components
+
 const Container = styled.div`
   padding: 20px; /* Increased padding */
   background-color: #f4f4f4;
@@ -133,7 +133,6 @@ const MobileSelect = styled.select`
   }
 `;
 
-// In TransactionList.js
 const TransactionList = ({ transactions, token, refreshTransactions, subcategoryColors }) => {
   const [isEditing, setIsEditing] = useState(null);
   const [editedTransaction, setEditedTransaction] = useState({});
@@ -163,7 +162,7 @@ const TransactionList = ({ transactions, token, refreshTransactions, subcategory
       await apiService.updateTransaction(editedTransaction._id, editedTransaction, token);
       alert('Transaction updated successfully');
       setIsEditing(null);
-      refreshTransactions(); // Refresh the transaction list after editing
+      refreshTransactions(); 
     } catch (error) {
       console.error('Error updating transaction:', error);
       alert('Failed to update transaction');
@@ -184,7 +183,7 @@ const TransactionList = ({ transactions, token, refreshTransactions, subcategory
   };
 
   const getCategoryColor = (category, subcategory) => {
-    // If the category is income, assign a different color (e.g., green)
+    // If the category is income, assign a different color
     if (category === 'income') {
       return '#9C27B0 '; // Purple color for income
     }

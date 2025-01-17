@@ -10,7 +10,7 @@ const transactionSchema = new mongoose.Schema({
   category: {
     type: String,
     required: true, 
-    enum: ['income', 'expense'], // Restrict to specific categories
+    enum: ['income', 'expense'], 
   },
   subcategory: {
     type: String,
@@ -23,7 +23,7 @@ const transactionSchema = new mongoose.Schema({
   description: {
     type: String,
     default: '',
-    maxlength: [500, 'Description cannot exceed 500 characters'], // Optional length restriction
+    maxlength: [500, 'Description cannot exceed 500 characters'], 
   },
   userId: {
     type: mongoose.Schema.Types.ObjectId, // Reference to the User model
@@ -32,5 +32,5 @@ const transactionSchema = new mongoose.Schema({
   },
 });
 
-// Create and export the Transaction model
+
 module.exports = mongoose.model('Transaction', transactionSchema);

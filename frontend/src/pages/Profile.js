@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback} from 'react';
 import { useNavigate } from 'react-router-dom';
 import authService from '../services/auth';
 import apiService from '../services/api';
@@ -152,32 +152,55 @@ const Profile = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
 
+  const stableNavigate = useCallback(() => navigate('/login'), [navigate]);
+
+  // Fetch the profile if there's a valid token
   useEffect(() => {
     if (!token) {
-      navigate('/login');
-    } else {
-      const fetchUserProfile = async () => {
-        try {
-          const profile = await authService.getProfile(token);
-          setUser(profile);
-          setNewEmail(profile.email);
-          const fetchedTransactions = await apiService.getTransactions(token);
-          setTransactions(fetchedTransactions);
-        } catch (err) {
-          setError('Failed to fetch profile');
-        }
-      };
+      stableNavigate();
+      return; // Exit early if no token is found
+    }
+
+    const fetchUserProfile = async () => {
+      try {
+        const profile = await authService.getProfile(token);
+        setUser(profile);
+        setNewEmail(profile.email);
+        const fetchedTransactions = await apiService.getTransactions(token);
+        setTransactions(fetchedTransactions);
+      } catch (err) {
+        setError('Failed to fetch profile');
+      }
+    };
+
+    if (user === null) { // Only fetch if user isn't already set
       fetchUserProfile();
     }
-  }, [navigate, token]);
+
+  }, [stableNavigate, token, user]);
 
   const handleDeleteAccount = async () => {
     if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
       try {
+        
         const response = await authService.deleteAccount(user._id, token);
-        alert(response.message);
+
+        // Show success message
+        console.log(response.message);
+
+        // Remove token from localStorage
         localStorage.removeItem('token');
-        navigate('/login');
+
+        // Clear user data and navigate to login page
+      
+        setUser(null);
+        
+        navigate('/login'); 
+
+      // Force reload to ensure the login page displays correctly
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
       } catch (err) {
         alert('Failed to delete account. Please try again.');
         console.error(err);
@@ -252,5 +275,6 @@ const Profile = () => {
     </Container>
   );
 };
+
 
 export default Profile;

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
-// Styled components for the form
 const FormContainer = styled.div`
   background-color: #fff;
   padding: 20px;

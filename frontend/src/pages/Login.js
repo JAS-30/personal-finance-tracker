@@ -128,7 +128,7 @@ const Login = ({ setIsAuthenticated }) => {
 
       if (user && user.token) {
         localStorage.setItem('token', user.token); // Store the token
-        setIsAuthenticated(true); // Update authentication state in parent (App.js)
+        setIsAuthenticated(true); 
         navigate('/home'); // Redirect to home after successful login
       } else {
         setError('Invalid credentials or server error');
