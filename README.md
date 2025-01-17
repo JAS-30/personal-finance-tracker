@@ -44,7 +44,9 @@ You need `Node.js` and `npm` installed. If you don't have them, you can download
    ```bash
    cd backend
    npm install
-
+5. Set up MongoDB:  
+Install MongoDB locally or use a cloud service like MongoDB Atlas.  
+Create a .env file in the root of the backend project and add the MongoDB connection string (e.g., MONGO_URI=mongodb://localhost:27017/budgetTracker).
 ### Running the Application
 
 1. Start the frontend:
@@ -53,14 +55,15 @@ You need `Node.js` and `npm` installed. If you don't have them, you can download
 
 2. Start the Backend (if applicable)
    ```bash
-   node server.js
+   node src/app.js
 
-The application should now be running on [http://localhost:3000]().
+The application should now be running.
 
 ### Usage
 
 Once the app is running:
 
+- Login or Register.
 - Navigate to the homepage to add and view transactions.
 - Use the transaction form to log your expenses and income.
 - View your budget summary and track your spending in real-time.
