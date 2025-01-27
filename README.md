@@ -70,6 +70,22 @@ Once the app is running:
 - Use the pie chart to visualize your expense distribution.
 - Modify your profile and explore your transaction history.
 
+## Preview
+
+### Gallery of Images
+Here are some screenshots of the application:
+
+| ![Screenshot 1](images/screenProject2-1.png) | ![Screenshot 2](images/screenProject2-2.png) | ![Screenshot 3](images/screenProject2-3.png) | ![Screenshot 4](images/screenProject2-4.png) | ![Screenshot 5](images/screenProject2-5.png) |
+|---------------------------------------------|---------------------------------------------|---------------------------------------------|---------------------------------------------|---------------------------------------------|
+| **Register**                               | **Login**                        | **After Login**                        | **Setting Budget**                        | **First transaction**                               |
+
+| ![Screenshot 6](images/screenProject2-6.png) | ![Screenshot 7](images/screenProject2-7.png) | ![Screenshot 8](images/screenProject2-8.png) | ![Screenshot 9](images/screenProject2-9.png) | ![Screenshot 10](images/screenProject2-10.png) |
+|---------------------------------------------|---------------------------------------------|---------------------------------------------|---------------------------------------------|----------------------------------------------|
+| **Budget overview**                     | **Expense overview**                         | **Budget overview 2**                               | **Expense chart**                              | **Transaction history**                            |
+
+| ![Screenshot 11](images/screenProject2-11.png) |
+|-----------------------------------------------|
+| **Profile**                |
 
 
    
