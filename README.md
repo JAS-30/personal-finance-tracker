@@ -55,7 +55,7 @@ Create a .env file in the root of the backend project and add the MongoDB connec
 
 2. Start the Backend (if applicable)
    ```bash
-   node src/app.js
+   node app.js
 
 The application should now be running.
 
